@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+@model List<Category>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Kategoriler</h3>
+            </div>
+            <div class="card-body">
+                <div class="table table-responsive-md">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Kategori Adı</th>
+                                <th>Kategori Açıklaması</th>
+                                <th>Eklenme Tarihi</th>
+                                <th>Güncellenme Tarihi</th>
+                                <th>Güncelle</th>
+                                <th>Sil</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in Model)
+                            {
+                                <tr>
+                                    <td>@category.Id</td>
+                                    <td>@category.Name</td>
+                                    <td>@category.Description</td>
+                                    <td>@category.CreatedDate</td>
+                                    @if (category.UpdatedDate is not null)
+                                    {
+                                        <td>@category.UpdatedDate</td>
+                                    }
+                                    else
+                                    {
+                                        <td> - </td>
+                                    }
+                                    <td>
+                                        <a asp-controller="Categories" asp-action="UpdateCategory" class="btn btn-outline-success" asp-route-id="@category.Id">Güncelle</a>
+                                    </td>
+                                    <td>
+                                        @*<a asp-controller="Categories" asp-action="DeleteCategory" class="btn btn-outline-danger" asp-route-id="@category.Id">Sil</a>*@
+                                        <button onclick="Delete(@category.Id)" class="btn btn-outline-danger">Sil</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a asp-controller="Categories" asp-action="AddCategory" class="btn btn-outline-primary d-block">Yeni Kategori Ekle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function Delete(sendedId) {
+        if (confirm("Silmek istediğinize emin misiniz?")) {
+            $.ajax({
+                type: "POST",
+                url: "categories/DeleteCategory",
+                data: { id: sendedId },
+                success: function () {
+                    LoadData();
+                }
+            });
+        };
+    };
+
+    function LoadData() {
+        $(document).ready(function () {
+            $.ajax({
+                url: "categories/index",
+                data: { value: "Kategori silindi!" },
+                success: function (data) {
+                    $('body').html(data);
+                }
+            });
+        });
+    };
+</script>
+
